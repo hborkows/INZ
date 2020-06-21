@@ -25,7 +25,6 @@ def calculate_features(dataset: pd.DataFrame) -> pd.DataFrame:
         result_list.append(result_dict)
 
     dataset = pd.DataFrame(result_list)
-
     return dataset
 
 def get_training_data(start_time: str, end_time: str, es_host: ESConnection) -> pd.DataFrame:
