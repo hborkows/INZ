@@ -10,8 +10,21 @@ from typing import List, Dict
 def calculate_features(dataset: pd.DataFrame) -> pd.DataFrame:
     unique_ips = dataset['src_ip'].value_counts().keys()
 
+    result_list = []
     for ip in unique_ips:
-        
+        tmp = dataset[dataset['src_ip'] == ip]
+        result_dict = {
+            'src_ip': ip,
+            'count': tmp.shape[0],
+            'src_mac_count': len(tmp['src_mac'].value_counts()),
+            'dst_mac_count': len(tmp['dst_mac'].value_counts()),
+            'src_port_count': len(tmp['src_port'].value_counts()),
+            'dst_port_count': len(tmp['dst_port'].value_counts()),
+            'dst_ip_count': len(tmp['dst_ip'].value_counts())  
+        }
+        result_list.append(result_dict)
+
+    dataset = pd.DataFrame(result_list)
 
     return dataset
 
