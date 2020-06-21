@@ -10,16 +10,6 @@ import binascii
 import json
 import ipaddress
 
-'''
-dst_ip = raw_input("IP to attack: ") if config.dst_ip == "" else config.dst_ip
-n_ips = raw_input("\nNumber of IPs: ") if config.n_ips == "" else config.n_ips
-n_msg = raw_input("\nNumber of messages per IP: ") if config.n_msg == "" else config.n_msg
-interface = raw_input("\nInterface: ") if config.interface == "" else config.interface
-type = raw_input("\nSelect type: \n1) Flood \n2) Teardrop \n3) Black nurse\nYour choice: ") if config.type == "" else config.type
-orig_type = raw_input("\nSelect IPs origin: \n1) From ips.txt \n2) Random\nYour choice: ") if config.orig_type == "" else config.orig_type
-threads = 3 if config.threads == "" else int(config.threads)
-'''
-
 n_threads = 3
 n_minutes = 15
 
