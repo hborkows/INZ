@@ -10,6 +10,7 @@ class ESConnection:
     def __init__(self, es_host, logstash_host):
         self._es_host = es_host
         self._logstash_host = logstash_host
+        self._elasticsearch = Elasticsearch([self._es_host])
     
     def send_packet(self, packet, target_index):
         eth_pkt = packet.get_protocol(ethernet.ethernet)
@@ -36,7 +37,7 @@ class ESConnection:
         return (dt - epoch).total_seconds() * 1000
 
     def _es_query(self, index, query, sort, search_after, max_size):
-        tmp = self._es_host.search(
+        tmp = self._elasticsearch.search(
             index=index,
             body={
                 "size": max_size,
