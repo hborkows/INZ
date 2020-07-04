@@ -15,7 +15,7 @@ from typing import List, Dict
 import ml_utils
 
 def train_model(model: ClassifierMixin, data_time_range: List[str], output_path: str):
-    es_host = ESConnection(es_host='http://localhost:9200', logstash_host='http://localhost:5000')
+    es_host = ESConnection(es_host='http://localhost:9200')
 
     dataset = ml_utils.get_data(start_time=data_time_range[0], end_time=data_time_range[1], es_host=es_host)
     dataset.to_pickle('data/dataset.pkl')
