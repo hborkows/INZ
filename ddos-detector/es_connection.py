@@ -12,7 +12,7 @@ class ESConnection:
         self._logstash_host = logstash_host
         self._elasticsearch = Elasticsearch([self._es_host])
     
-    def send_packet(self, packet, target_index):
+    def send_packet(self, packet):
         if not self._logstash_host:
             print('Logstash host not specified')
             return
@@ -22,7 +22,6 @@ class ESConnection:
         ipv4_pkt = packet.get_protocol(ipv4.ipv4)
 
         packet_dict = {
-            'index_name': target_index,
             'src_ip': ipv4_pkt.src,
             'dst_ip': ipv4_pkt.dst,
             'src_port': tcp_pkt.src_port,

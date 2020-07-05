@@ -23,6 +23,8 @@ from ryu.lib.packet import ethernet
 from ryu.lib.packet import ether_types
 from ryu.lib.packet import packet, ethernet, ipv4, tcp
 from es_connection import ESConnection
+from ip_scoring import Classifier
+import sys
 
 
 class SimpleSwitch13(app_manager.RyuApp):
@@ -32,6 +34,8 @@ class SimpleSwitch13(app_manager.RyuApp):
         super(SimpleSwitch13, self).__init__(*args, **kwargs)
         self.mac_to_port = {}
         self.es_connection = ESConnection(es_host='http://localohst:9200', logstash_host='http://localhost:5000')
+        self.ip_classifier = Classifier(saved_model_path='test.joblib', es_host='http://localhost:9200')
+        self.score_threshold = 0.9
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -81,9 +85,23 @@ class SimpleSwitch13(app_manager.RyuApp):
 
         pkt = packet.Packet(msg.data)
 
-        #print(str(pkt))
+        #Packet analysis add-on
+        #-------------------------------------------------------------------------------------
         if self._packet_is_tcp(pkt):
-            self.es_connection.send_packet(pkt, target_index='test_index')
+            self.es_connection.send_packet(pkt)
+
+            ipv4_pkt = pkt.get_protocol(ipv4.ipv4)
+            ip = ipv4_pkt.src
+            score = self.ip_classifier.score_ip(ip)
+
+            if score >= self.score_threshold: #add flow rule to drop traffic from ip
+                actions = []
+                match = parser.OFPMatch(ipv4_src=ip)
+                self.add_flow(datapath=datapath, priority=sys.maxsize, match=match, actions=actions) #setting the highest possible priority
+                return
+        #-------------------------------------------------------------------------------------
+        #End of packet analysis add-on
+        
 
         eth = pkt.get_protocols(ethernet.ethernet)[0]
 
